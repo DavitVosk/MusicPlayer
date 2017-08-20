@@ -10,7 +10,7 @@ class AllSingers extends Component {
 
 	renderSinger (item) {
 		return (
-			<TouchableOpacity onPress={() => Actions.singer()}>
+			<TouchableOpacity onPress={() => Actions.singer({ singer: item })}>
 				<Card
 					title={item.name}
 					image={{ uri: item.background }}
@@ -20,9 +20,8 @@ class AllSingers extends Component {
 	}
 
 	render () {
-		console.log('Data', Data);
 		return (
-			<View style={{ flex: 1, backgroundColor: '#111' }}>
+			<View style={styles.container}>
 				<NavBar title='Artists'/>
 
 				<FlatList
@@ -34,5 +33,12 @@ class AllSingers extends Component {
 		)
 	}
 }
+
+const styles = {
+	container: {
+		flex: 1,
+		backgroundColor: 'black'
+	}
+};
 
 export default AllSingers;

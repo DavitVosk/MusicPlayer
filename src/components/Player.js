@@ -12,15 +12,19 @@ class Player extends Component {
 	constructor (props) {
 		super(props);
 		this.state = {
+			song: this.props.song,
+			songIndex: this.props.songIndex,
 			songDuration: 0,
 			currentTime: 0,
-			play: true
+			play: true,
 		}
 	}
 
-	componentWillMount () {
+	playSong () {
+		this.music ? this.music.stop() : null;
+
 		this.music = new Sound(
-			'https://api.soundcloud.com/tracks/254196631/stream?client_id=8a754483a114344c70ab15f20a5035ab',
+			this.state.song.url,
 			'',
 			(error) => {
 				if ( error ) {
@@ -44,6 +48,10 @@ class Player extends Component {
 					}
 				});
 			});
+	}
+
+	componentDidMount () {
+		this.playSong();
 	}
 
 	componentWillUpdate (nextProps, nextState) {
@@ -70,6 +78,46 @@ class Player extends Component {
 		});
 	};
 
+	listenSingerPrevSong () {
+		const { songs } = this.props.singer;
+		const { songIndex } = this.state;
+
+		if ( songIndex === 0 ) {
+			this.playSong();
+
+		} else {
+			this.setState({ songIndex: this.state.songIndex - 1 }, () => {
+				const song = songs.find((song, index) => {
+					return index === this.state.songIndex;
+				});
+
+				this.setState({ song, currentTime: 0 }, () => {
+					this.playSong();
+				});
+			})
+		}
+	}
+
+	listenSingerNextSong () {
+		const { songs } = this.props.singer;
+		const { songIndex } = this.state;
+
+		if ( songIndex === songs.length - 1 ) {
+			this.playSong();
+
+		} else {
+			this.setState({ songIndex: this.state.songIndex + 1 }, () => {
+				const song = songs.find((song, index) => {
+					return index === this.state.songIndex;
+				});
+
+				this.setState({ song, currentTime: 0 }, () => {
+					this.playSong();
+				});
+			})
+		}
+	}
+
 	handlePause () {
 		this.setState({ play: false }, () => {
 			this.music.pause()
@@ -89,7 +137,7 @@ class Player extends Component {
 	}
 
 	render () {
-		const playingSong = Data[0];
+		const { singer } = this.props;
 
 		const playOrPauseIcon = (
 			this.state.play ?
@@ -103,7 +151,7 @@ class Player extends Component {
 
 		return (
 			<View style={{ flex: 1 }}>
-				<Image source={{ uri: playingSong.background }} style={{ height: SCREEN_HEIGHT, width: SCREEN_WIDTH }}/>
+				<Image source={{ uri: singer.background }} style={{ height: SCREEN_HEIGHT, width: SCREEN_WIDTH }}/>
 
 				<Slider
 					value={songPercentage}
@@ -112,11 +160,11 @@ class Player extends Component {
 				/>
 
 				<View style={styles.control}>
-					{/*<Icon onPress={this.listenPreviousSong.bind(this)} name={"ios-skip-backward"}/>*/}
+					<Icon onPress={this.listenSingerPrevSong.bind(this)} name={"ios-skip-backward"}/>
 					<Icon onPress={this.listenSongPrevChunk.bind(this)} name={"md-arrow-dropleft"}/>
 					{playOrPauseIcon}
 					<Icon onPress={this.listenSongNextChunk.bind(this)} name={"md-arrow-dropright"}/>
-					{/*<Icon onPress={this.listenNextSong.bind(this)} name={"ios-skip-forward"}/>*/}
+					<Icon onPress={this.listenSingerNextSong.bind(this)} name={"ios-skip-forward"}/>
 				</View>
 			</View>
 		)
@@ -125,7 +173,7 @@ class Player extends Component {
 
 const styles = {
 	control: {
-		flex:1,
+		flex: 1,
 		flexDirection: 'row',
 		width: SCREEN_WIDTH,
 		justifyContent: 'center',
