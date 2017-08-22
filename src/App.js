@@ -6,8 +6,8 @@ import SingerSongs from './components/SingerSongs';
 import Player from './components/Player';
 import TAB_BAR from './components/reused/NavBar';
 
-const SCREEN_HEIGHT= Dimensions.get('window').height;
-const TAB_BAR_HEIGHT= SCREEN_HEIGHT / 10;
+const SCREEN_HEIGHT = Dimensions.get('window').height;
+const TAB_BAR_HEIGHT = SCREEN_HEIGHT / 10;
 
 class App extends Component {
 	render () {
@@ -20,7 +20,7 @@ class App extends Component {
 		const ScenesStructure = {
 			allSingers: { component: AllSingers, ...commonProps },
 			singer: { component: SingerSongs, ...commonProps },
-			player: { component: Player, ...commonProps },
+			player: { component: Player, ...commonProps, direction: "vertical" },
 		};
 
 		const Scenes = [];

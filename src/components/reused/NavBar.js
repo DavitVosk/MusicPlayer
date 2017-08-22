@@ -34,7 +34,8 @@ const styles = {
 	},
 	icon:{
 		marginRight:0,
-		marginLeft:15
+		marginLeft:15,
+		alignSelf:'center'
 	},
 	c: {
 		borderColor: 'red',

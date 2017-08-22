@@ -4,7 +4,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 export default ({onPress, name, style})=> {
 	return(
 		<Icon
-			style={[{marginHorizontal: 20, alignSelf:'center'}, style]}
+			style={[{marginHorizontal: 20}, style]}
 			onPress={onPress}
 			name={name}
 			size={40}

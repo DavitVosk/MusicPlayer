@@ -2,11 +2,13 @@ import React, { Component } from 'react';
 import { View, Text, Image, Dimensions } from 'react-native';
 import Sound from 'react-native-sound';
 import Slider from "react-native-slider";
-import Data from '../Data';
 import Icon from './reused/Icon';
+import NavBar from './reused/NavBar';
+
+import { Actions } from 'react-native-router-flux';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
-const SCREEN_HEIGHT = Dimensions.get('window').height * 0.75;
+const SCREEN_HEIGHT = Dimensions.get('window').height * 0.5;
 
 class Player extends Component {
 	constructor (props) {
@@ -23,47 +25,43 @@ class Player extends Component {
 	playSong () {
 		this.music ? this.music.stop() : null;
 
-		this.music = new Sound(
-			this.state.song.url,
-			'',
-			(error) => {
-				if ( error ) {
-					console.log('failed to load the sound', error);
-					return;
+		this.music = new Sound(this.state.song.url, '', (error) => {
+			if ( error ) {
+				return;
+			}
+
+			const songDuration = this.music.getDuration();
+			this.setState({ songDuration });
+
+			this.changeCurrentTime();
+
+			// loaded successfully, play
+			this.music.play((success) => {
+				if ( success ) {
+					console.log('successfully finished playing');
+					 return this.state.songIndex === this.props.singer.songs.length - 1 ? this.music.stop() : this.changePlayingSongTo('next')
+				} else {
+					console.log('playback failed due to audio decoding errors');
 				}
-
-				const songDuration = this.music.getDuration();
-				this.setState({ songDuration });
-
-				setInterval(() => {
-					this.changeCurrentTime();
-				}, 1000);
-
-				// loaded successfully, play
-				this.music.play((success) => {
-					if ( success ) {
-						console.log('successfully finished playing');
-					} else {
-						console.log('playback failed due to audio decoding errors');
-					}
-				});
 			});
+		});
 	}
 
-	componentDidMount () {
+	componentWillMount () {
 		this.playSong();
 	}
 
-	componentWillUpdate (nextProps, nextState) {
-		nextState.currentTime > nextState.songDuration ? this.setState({ play: false }) : null;
-	}
+	// componentWillUpdate (nextProps, nextState) {
+	// 	 nextState.currentTime > this.state.songDuration ? this.setState({ play: false }) : null;
+	// 	 nextState.currentTime === this.state.songDuration ? this.changePlayingSongTo('next') : null;
+	// }
 
 	changeCurrentTime = () => {
-		this.music.getCurrentTime((seconds, isPlaying) => {
-			this.setState({ currentTime: seconds });
-			// console.log('seconds', seconds);
-			// console.log('isPlaying', isPlaying);
-		});
+		setInterval(() => {
+			this.music.getCurrentTime((seconds, isPlaying) => {
+				isPlaying ? this.setState({ currentTime: seconds }) : null;
+			});
+		}, 1000)
 	};
 
 	listenSongPrevChunk () {
@@ -78,15 +76,17 @@ class Player extends Component {
 		});
 	};
 
-	listenSingerPrevSong () {
+	changePlayingSongTo (anotherSong) {
 		const { songs } = this.props.singer;
 		const { songIndex } = this.state;
+		const numberCompareWithSongIndex = anotherSong === 'next' ? songs.length - 1 : 0;
+		const nextOrPrevSongIndex = anotherSong === 'next' ? songIndex + 1 : songIndex - 1;
 
-		if ( songIndex === 0 ) {
+		if ( songIndex === numberCompareWithSongIndex ) {
+			this.setState({ play: true });
 			this.playSong();
-
 		} else {
-			this.setState({ songIndex: this.state.songIndex - 1 }, () => {
+			this.setState({ songIndex: nextOrPrevSongIndex, play: true }, () => {
 				const song = songs.find((song, index) => {
 					return index === this.state.songIndex;
 				});
@@ -98,35 +98,9 @@ class Player extends Component {
 		}
 	}
 
-	listenSingerNextSong () {
-		const { songs } = this.props.singer;
-		const { songIndex } = this.state;
-
-		if ( songIndex === songs.length - 1 ) {
-			this.playSong();
-
-		} else {
-			this.setState({ songIndex: this.state.songIndex + 1 }, () => {
-				const song = songs.find((song, index) => {
-					return index === this.state.songIndex;
-				});
-
-				this.setState({ song, currentTime: 0 }, () => {
-					this.playSong();
-				});
-			})
-		}
-	}
-
-	handlePause () {
-		this.setState({ play: false }, () => {
-			this.music.pause()
-		})
-	}
-
-	handlePlay () {
-		this.setState({ play: true }, () => {
-			this.music.play()
+	handlePauseAndPlay (play) {
+		this.setState({ play }, () => {
+			play ? this.music.play() : this.music.pause()
 		})
 	}
 
@@ -136,14 +110,24 @@ class Player extends Component {
 		});
 	}
 
+	stopPlayingAndGoBack () {
+		this.music.stop();
+		Actions.pop();
+	}
+
 	render () {
+		console.log( 'song play', this.state.play );
 		const { singer } = this.props;
+
+		const navBar = (
+			<NavBar title={singer.name} iconName="ios-arrow-down" onPress={this.stopPlayingAndGoBack.bind(this)}/>
+		);
 
 		const playOrPauseIcon = (
 			this.state.play ?
-				<Icon onPress={this.handlePause.bind(this)} name={"ios-pause"}/>
+				<Icon onPress={this.handlePauseAndPlay.bind(this, false)} name={"ios-pause"}/>
 				:
-				<Icon onPress={this.handlePlay.bind(this)} name={"ios-play"}/>
+				<Icon onPress={this.handlePauseAndPlay.bind(this, true)} name={"ios-play"}/>
 		);
 
 		let songPercentage;
@@ -151,7 +135,9 @@ class Player extends Component {
 
 		return (
 			<View style={{ flex: 1 }}>
-				<Image source={{ uri: singer.background }} style={{ height: SCREEN_HEIGHT, width: SCREEN_WIDTH }}/>
+				{navBar}
+
+				<Image source={{ uri: singer.background }} style={styles.image}/>
 
 				<Slider
 					value={songPercentage}
@@ -159,12 +145,12 @@ class Player extends Component {
 					minimumTrackTintColor="red"
 				/>
 
-				<View style={styles.control}>
-					<Icon onPress={this.listenSingerPrevSong.bind(this)} name={"ios-skip-backward"}/>
+				<View style={styles.controlButtonsContainer}>
+					<Icon onPress={this.changePlayingSongTo.bind(this, 'prev')} name={"ios-skip-backward"}/>
 					<Icon onPress={this.listenSongPrevChunk.bind(this)} name={"md-arrow-dropleft"}/>
 					{playOrPauseIcon}
 					<Icon onPress={this.listenSongNextChunk.bind(this)} name={"md-arrow-dropright"}/>
-					<Icon onPress={this.listenSingerNextSong.bind(this)} name={"ios-skip-forward"}/>
+					<Icon onPress={this.changePlayingSongTo.bind(this, 'next')} name={"ios-skip-forward"}/>
 				</View>
 			</View>
 		)
@@ -172,11 +158,17 @@ class Player extends Component {
 }
 
 const styles = {
-	control: {
+	image: {
+		height: SCREEN_HEIGHT,
+		width: SCREEN_WIDTH
+	},
+	controlButtonsContainer: {
 		flex: 1,
 		flexDirection: 'row',
 		width: SCREEN_WIDTH,
 		justifyContent: 'center',
+		alignItems: 'flex-start',
+		paddingTop: 20
 	}
 };
 
