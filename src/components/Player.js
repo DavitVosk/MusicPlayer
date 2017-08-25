@@ -116,7 +116,6 @@ class Player extends Component {
 	}
 
 	render () {
-		console.log( 'song play', this.state.play );
 		const { singer } = this.props;
 
 		const navBar = (

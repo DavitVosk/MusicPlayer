@@ -1,23 +1,33 @@
 import React, { Component } from 'react';
-import { View, Text, Dimensions } from 'react-native';
 import { Router, Scene } from 'react-native-router-flux';
+import firebase from 'firebase';
+import LoginForm from './components/LoginForm';
+import SignUpForm from './components/SignUpForm';
 import AllSingers from './components/AllSingers';
 import SingerSongs from './components/SingerSongs';
 import Player from './components/Player';
-import TAB_BAR from './components/reused/NavBar';
-
-const SCREEN_HEIGHT = Dimensions.get('window').height;
-const TAB_BAR_HEIGHT = SCREEN_HEIGHT / 10;
 
 class App extends Component {
-	render () {
+	componentWillMount() {
+	  firebase.initializeApp({
+			apiKey: "AIzaSyDD0xLQkyiPzxExDzvr4gELoiuyD1JdEtU",
+			authDomain: "music-player-15408.firebaseapp.com",
+			databaseURL: "https://music-player-15408.firebaseio.com",
+			projectId: "music-player-15408",
+			storageBucket: "music-player-15408.appspot.com",
+			messagingSenderId: "194930829591"
+		})
+	}
 
+	render () {
 		const commonProps = {
 			hideNavBar: true,
 		};
 
 		// key => component parent
 		const ScenesStructure = {
+			signUp: { component: SignUpForm, ...commonProps },
+			login: { component: LoginForm, ...commonProps },
 			allSingers: { component: AllSingers, ...commonProps },
 			singer: { component: SingerSongs, ...commonProps },
 			player: { component: Player, ...commonProps, direction: "vertical" },
