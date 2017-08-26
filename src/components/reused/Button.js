@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from 'react-native-elements';
 
-export default ({title})=> {
+export default ({title, onPress})=> {
 	return(
 		<Button
 			medium
@@ -9,6 +9,7 @@ export default ({title})=> {
 			backgroundColor="#ffb0a8"
 			color="black"
 			buttonStyle={{marginVertical:20}}
+			onPress={onPress}
 		/>
 	)
 }

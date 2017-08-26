@@ -32,7 +32,7 @@ class SignUpForm extends Component {
 					value={password}
 				/>
 
-				<Button title="Sign In"/>
+				<Button title="Sign In" onPress={()=> Actions.allSingers()}/>
 
 				<TouchableHighlight onPress={() => Actions.pop()}>
 					<Text style={styles.text}>Should Sign Up first ?</Text>
