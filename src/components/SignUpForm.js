@@ -58,7 +58,7 @@ class SignUpForm extends Component {
 		}
 	}
 
-	validateSignUp (email, pass, confirmPass) {
+	validateSignUP (email, pass, confirmPass) {
 		const validated = validate.validate_signUP(email, pass, confirmPass);
 		const inputs = ['email', 'password', 'confirmPassword'];
 
@@ -67,7 +67,6 @@ class SignUpForm extends Component {
 		} else {
 			return inputs.map(input => this.validateInput(input))
 		}
-
 	}
 
 	render () {
@@ -101,7 +100,7 @@ class SignUpForm extends Component {
 				/>
 				<Text>{confirmPasswordError}</Text>
 
-				<Button title="Sign Up" onPress={this.validateSignUp.bind(this, email, password, confirmPassword)}/>
+				<Button title="Sign Up" onPress={this.validateSignUP.bind(this, email, password, confirmPassword)}/>
 
 				<TouchableHighlight onPress={() => Actions.login()}>
 					<Text style={styles.text}>Already Signed Up ?</Text>

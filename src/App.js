@@ -26,8 +26,8 @@ class App extends Component {
 
 		// key => component parent
 		const ScenesStructure = {
-			signUp: { component: SignUpForm, ...commonProps },
 			login: { component: LoginForm, ...commonProps },
+			signUp: { component: SignUpForm, ...commonProps },
 			allSingers: { component: AllSingers, ...commonProps },
 			singer: { component: SingerSongs, ...commonProps },
 			player: { component: Player, ...commonProps, direction: "vertical" },
