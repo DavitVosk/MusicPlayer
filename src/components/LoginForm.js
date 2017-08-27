@@ -1,5 +1,12 @@
 import React, { Component } from 'react';
-import { View, Image, Dimensions, Text, TouchableHighlight } from 'react-native';
+import {
+	View,
+	Text,
+	Image,
+	Dimensions,
+	TouchableHighlight,
+	Alert
+} from 'react-native';
 import InputField from './reused/InputField';
 import Button from './reused/Button'
 import * as validate from '../utils/validation/validation';
@@ -27,8 +34,8 @@ class SignUpForm extends Component {
 		}
 	}
 
-	componentWillUpdate(nextProps, nextState) {
-		if(nextProps.user)
+	componentWillUpdate (nextProps, nextState) {
+		if ( nextProps.user )
 			Actions.allSingers({ type: 'reset' });
 	}
 
@@ -59,6 +66,7 @@ class SignUpForm extends Component {
 	}
 
 	validateSignIN (email, pass) {
+		this.setState({ emailError: '', passwordError: '' });
 		const validated = validate.validate_signIN(email, pass);
 		const inputs = ['email', 'password',];
 
@@ -115,12 +123,12 @@ const styles = {
 		fontSize: 15,
 		color: 'white'
 	},
-	error:{
-		color:'red'
+	error: {
+		color: 'red'
 	}
 };
 
-const mapStateToProps = ({auth}) => {
+const mapStateToProps = ({ auth }) => {
 	const { user } = auth;
 	return { user }
 };
