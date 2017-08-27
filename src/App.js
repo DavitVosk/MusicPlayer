@@ -5,6 +5,7 @@ import { persistStore, autoRehydrate } from 'redux-persist'
 import { Provider } from 'react-redux';
 import RouterComponent from './Router';
 import store from './reducers/store';
+import LeftMenu from './components/menu/MenuWrapped';
 
 class App extends Component {
 	constructor (props) {
@@ -22,7 +23,10 @@ class App extends Component {
 			messagingSenderId: "194930829591"
 		});
 
-		persistStore(store, {storage: AsyncStorage}, () => {
+		persistStore(store, {
+			storage: AsyncStorage,
+			blacklist: ['menuOpen']
+		}, () => {
 			this.setState({ rehydrated: true });
 		});
 	}
@@ -32,7 +36,9 @@ class App extends Component {
 			return <View/>;
 		return (
 			<Provider store={store}>
-				<RouterComponent/>
+				<LeftMenu>
+					<RouterComponent/>
+				</LeftMenu>
 			</Provider>
 		)
 	}
