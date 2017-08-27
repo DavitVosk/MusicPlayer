@@ -7,7 +7,7 @@ export const validate_email = (email) => {
 };
 
 export const validate_password = (pass) => {
-	if ( pass === '' || pass.length < 4 || pass.length > 60 )
+	if ( pass === '' || pass.length < 6 || pass.length > 60 )
 		return false;
 
 	return true;

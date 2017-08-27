@@ -3,7 +3,9 @@ import { View, Text, Image, Dimensions, TouchableHighlight } from 'react-native'
 import InputField from './reused/InputField';
 import Button from './reused/Button'
 import * as validate from '../utils/validation/validation';
+import { user_sign_up } from '../actions';
 
+import { connect } from 'react-redux';
 import { Actions } from 'react-native-router-flux';
 
 const { width, height } = Dimensions.get("window");
@@ -21,6 +23,17 @@ class SignUpForm extends Component {
 		}
 	}
 
+	componentWillMount () {
+		if ( this.props.user ) {
+			Actions.allSingers({ type: 'reset' })
+		}
+	}
+
+	componentWillUpdate (nextProps, nextState) {
+		if ( nextProps.user )
+			Actions.allSingers({ type: 'reset' });
+	}
+
 	validateInput (input) {
 		const { email, password, confirmPassword } = this.state;
 
@@ -36,7 +49,7 @@ class SignUpForm extends Component {
 		}
 
 		if ( input === 'password' ) {
-			const passwordError = 'Your password must contain between 4 and 60 characters';
+			const passwordError = 'Your password must contain between 6 and 60 characters';
 			const isValid = validate.validate_password(password);
 
 			if ( ! isValid ) {
@@ -63,7 +76,7 @@ class SignUpForm extends Component {
 		const inputs = ['email', 'password', 'confirmPassword'];
 
 		if ( validated ) {
-			Actions.allSingers({type:'reset'});
+			return this.props.user_sign_up(email, pass);
 		} else {
 			return inputs.map(input => this.validateInput(input))
 		}
@@ -80,7 +93,7 @@ class SignUpForm extends Component {
 					onChangeText={email => this.setState({ email })}
 					value={email}
 				/>
-				<Text>{emailError}</Text>
+				<Text style={styles.error}>{emailError}</Text>
 
 				<InputField
 					secureTextEntry
@@ -89,7 +102,7 @@ class SignUpForm extends Component {
 					onChangeText={password => this.setState({ password })}
 					value={password}
 				/>
-				<Text>{passwordError}</Text>
+				<Text style={styles.error}>{passwordError}</Text>
 
 				<InputField
 					secureTextEntry
@@ -98,11 +111,11 @@ class SignUpForm extends Component {
 					onChangeText={confirmPassword => this.setState({ confirmPassword })}
 					value={confirmPassword}
 				/>
-				<Text>{confirmPasswordError}</Text>
+				<Text style={styles.error}>{confirmPasswordError}</Text>
 
 				<Button title="Sign Up" onPress={this.validateSignUP.bind(this, email, password, confirmPassword)}/>
 
-				<TouchableHighlight onPress={() => Actions.login()}>
+				<TouchableHighlight onPress={() => Actions.pop()}>
 					<Text style={styles.text}>Already Signed Up ?</Text>
 				</TouchableHighlight>
 			</Image>
@@ -121,7 +134,15 @@ const styles = {
 		textAlign: 'center',
 		fontSize: 15,
 		color: 'white'
+	},
+	error:{
+		color:'red'
 	}
 };
 
-export default SignUpForm;
+const mapStateToProps = ({auth}) => {
+	const { user } = auth;
+	return { user }
+};
+
+export default connect(mapStateToProps, { user_sign_up })(SignUpForm);

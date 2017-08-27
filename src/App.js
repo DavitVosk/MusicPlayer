@@ -1,52 +1,39 @@
 import React, { Component } from 'react';
-import { Router, Scene } from 'react-native-router-flux';
+import { View, Text, AsyncStorage } from 'react-native';
 import firebase from 'firebase';
-import LoginForm from './components/LoginForm';
-import SignUpForm from './components/SignUpForm';
-import AllSingers from './components/AllSingers';
-import SingerSongs from './components/SingerSongs';
-import Player from './components/Player';
+import { persistStore, autoRehydrate } from 'redux-persist'
+import { Provider } from 'react-redux';
+import RouterComponent from './Router';
+import store from './reducers/store';
 
 class App extends Component {
-	componentWillMount() {
-	  firebase.initializeApp({
+	constructor (props) {
+		super(props);
+		this.state = { rehydrated: false }
+	}
+
+	componentWillMount () {
+		firebase.initializeApp({
 			apiKey: "AIzaSyDD0xLQkyiPzxExDzvr4gELoiuyD1JdEtU",
 			authDomain: "music-player-15408.firebaseapp.com",
 			databaseURL: "https://music-player-15408.firebaseio.com",
 			projectId: "music-player-15408",
 			storageBucket: "music-player-15408.appspot.com",
 			messagingSenderId: "194930829591"
-		})
+		});
+
+		persistStore(store, {storage: AsyncStorage}, () => {
+			this.setState({ rehydrated: true });
+		});
 	}
 
 	render () {
-		const commonProps = {
-			hideNavBar: true,
-		};
-
-		// key => component parent
-		const ScenesStructure = {
-			login: { component: LoginForm, ...commonProps },
-			signUp: { component: SignUpForm, ...commonProps },
-			allSingers: { component: AllSingers, ...commonProps },
-			singer: { component: SingerSongs, ...commonProps },
-			player: { component: Player, ...commonProps, direction: "vertical" },
-		};
-
-		const Scenes = [];
-
-		for (var key in ScenesStructure) {
-			const SceneProps = ScenesStructure[key];
-
-			Scenes.push(
-				<Scene key={key} {...SceneProps} />
-			);
-		}
-
+		if ( ! this.state.rehydrated )
+			return <View/>;
 		return (
-			<Router>
-				{Scenes}
-			</Router>
+			<Provider store={store}>
+				<RouterComponent/>
+			</Provider>
 		)
 	}
 }

@@ -3,8 +3,10 @@ import { View, Image, Dimensions, Text, TouchableHighlight } from 'react-native'
 import InputField from './reused/InputField';
 import Button from './reused/Button'
 import * as validate from '../utils/validation/validation';
+import { user_sign_in } from '../actions';
 
 import { Actions } from 'react-native-router-flux';
+import { connect } from 'react-redux';
 
 const { width, height } = Dimensions.get("window");
 
@@ -17,6 +19,17 @@ class SignUpForm extends Component {
 			emailError: '',
 			passwordError: ''
 		}
+	}
+
+	componentWillMount () {
+		if ( this.props.user ) {
+			Actions.allSingers({ type: 'reset' });
+		}
+	}
+
+	componentWillUpdate(nextProps, nextState) {
+		if(nextProps.user)
+			Actions.allSingers({ type: 'reset' });
 	}
 
 	validateInput (input) {
@@ -34,7 +47,7 @@ class SignUpForm extends Component {
 		}
 
 		if ( input === 'password' ) {
-			const passwordError = 'Your password must contain between 4 and 60 characters';
+			const passwordError = 'Your password must contain between 6 and 60 characters';
 			const isValid = validate.validate_password(password);
 
 			if ( ! isValid ) {
@@ -50,7 +63,7 @@ class SignUpForm extends Component {
 		const inputs = ['email', 'password',];
 
 		if ( validated ) {
-			Actions.allSingers({ type: 'reset' });
+			return this.props.user_sign_in(email, pass);
 		} else {
 			return inputs.map(input => this.validateInput(input))
 		}
@@ -67,7 +80,7 @@ class SignUpForm extends Component {
 					onChangeText={email => this.setState({ email })}
 					value={email}
 				/>
-				<Text>{emailError}</Text>
+				<Text style={styles.error}>{emailError}</Text>
 
 				<InputField
 					secureTextEntry
@@ -76,12 +89,12 @@ class SignUpForm extends Component {
 					onChangeText={password => this.setState({ password })}
 					value={password}
 				/>
-				<Text>{passwordError}</Text>
+				<Text style={styles.error}>{passwordError}</Text>
 
 
 				<Button title="Sign In" onPress={this.validateSignIN.bind(this, email, password)}/>
 
-				<TouchableHighlight onPress={() => Actions.pop()}>
+				<TouchableHighlight onPress={() => Actions.signUp()}>
 					<Text style={styles.text}>Should Sign Up first ?</Text>
 				</TouchableHighlight>
 
@@ -95,13 +108,21 @@ const styles = {
 		width,
 		height,
 		flex: 1,
-		justifyContent: 'center'
+		justifyContent: 'center',
 	},
 	text: {
 		textAlign: 'center',
 		fontSize: 15,
 		color: 'white'
+	},
+	error:{
+		color:'red'
 	}
 };
 
-export default SignUpForm;
+const mapStateToProps = ({auth}) => {
+	const { user } = auth;
+	return { user }
+};
+
+export default connect(mapStateToProps, { user_sign_in })(SignUpForm);
