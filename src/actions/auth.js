@@ -2,7 +2,6 @@ import firebase from 'firebase';
 import * as aT from './types';
 import { Alert } from 'react-native';
 
-
 export const user_sign_up = (email, password) => {
 	return (dispatch) => {
 		// firebase.auth().currentUser.sendEmailVerification(email)
@@ -10,25 +9,21 @@ export const user_sign_up = (email, password) => {
 		// 	.catch((error)=> Alert.alert(error.message))
 		firebase.auth().createUserWithEmailAndPassword(email, password)
 			.then(user => handleEmailVerification(user))
-			.catch((error) =>  Alert.alert('', error.message,))
+			.catch((error) => Alert.alert('', error.message,))
 	}
 };
 
-const handleEmailVerification = (user)=> {
+const handleEmailVerification = (user) => {
 	Alert.alert('', 'Verification mail is sent to your mentioned email, please verify it for further sign in');
 	user.sendEmailVerification()
 };
 
 export const user_sign_in = (email, password) => {
 	return (dispatch) => {
-		console.log( 'verified??', firebase.auth().currentUser.emailVerified );
-		if(firebase.auth().currentUser.emailVerified){
 			firebase.auth().signInWithEmailAndPassword(email, password)
-				.then(user => dispatch({ type: aT.SIGN_IN_SUCCESS, payload: { user, email } }))
-				.catch((error) =>  Alert.alert('', error.message,))
-		}else{
-			return Alert.alert('Please first verify your email address')
-		}
+				.then(user => user.emailVerified ? dispatch({ type: aT.SIGN_IN_SUCCESS, payload: { user, email } })
+					: Alert.alert('Please first verify your email',))
+				.catch((error) => Alert.alert('', error.message,))
 	}
 };
 

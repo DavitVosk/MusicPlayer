@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import { View, Text, AsyncStorage } from 'react-native';
-import firebase from 'firebase';
-import { persistStore, autoRehydrate } from 'redux-persist'
+import { persistStore, } from 'redux-persist'
 import { Provider } from 'react-redux';
 import RouterComponent from './Router';
 import store from './reducers/store';
 import LeftMenu from './components/menu/MenuWrapped';
+import InitializeFirebase from './firebase/initialize_firebase';
 
 class App extends Component {
 	constructor (props) {
@@ -14,19 +14,9 @@ class App extends Component {
 	}
 
 	componentWillMount () {
-		firebase.initializeApp({
-			apiKey: "AIzaSyDD0xLQkyiPzxExDzvr4gELoiuyD1JdEtU",
-			authDomain: "music-player-15408.firebaseapp.com",
-			databaseURL: "https://music-player-15408.firebaseio.com",
-			projectId: "music-player-15408",
-			storageBucket: "music-player-15408.appspot.com",
-			messagingSenderId: "194930829591"
-		});
+		InitializeFirebase();
 
-		persistStore(store, {
-			storage: AsyncStorage,
-			blacklist: ['menuOpen']
-		}, () => {
+		persistStore(store, { storage: AsyncStorage, blacklist: ['menuOpen'] }, () => {
 			this.setState({ rehydrated: true });
 		});
 	}

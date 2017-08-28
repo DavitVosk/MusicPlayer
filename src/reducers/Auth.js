@@ -4,8 +4,8 @@ import {
 } from '../actions/types';
 
 const INITIAL_STATE = {
-	email: '',
-	user: '',
+	email: null,
+	user: null,
 };
 
 export default (state = INITIAL_STATE, action) => {

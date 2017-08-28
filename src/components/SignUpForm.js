@@ -104,7 +104,7 @@ class SignUpForm extends Component {
 
 				<Button title="Sign Up" onPress={this.validateSignUP.bind(this, email, password, confirmPassword)}/>
 
-				<TouchableHighlight onPress={() => Actions.pop()}>
+				<TouchableHighlight onPress={() => Actions.login()}>
 					<Text style={styles.text}>Already Signed Up ?</Text>
 				</TouchableHighlight>
 			</Image>
