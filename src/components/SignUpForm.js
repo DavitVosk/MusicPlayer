@@ -23,17 +23,6 @@ class SignUpForm extends Component {
 		}
 	}
 
-	componentWillMount () {
-		if ( this.props.user ) {
-			Actions.allSingers({ type: 'reset' })
-		}
-	}
-
-	componentWillUpdate (nextProps, nextState) {
-		if ( nextProps.user )
-			Actions.allSingers({ type: 'reset' });
-	}
-
 	validateInput (input) {
 		const { email, password, confirmPassword } = this.state;
 
@@ -140,9 +129,4 @@ const styles = {
 	}
 };
 
-const mapStateToProps = ({auth}) => {
-	const { user } = auth;
-	return { user }
-};
-
-export default connect(mapStateToProps, { user_sign_up })(SignUpForm);
+export default connect(null, { user_sign_up })(SignUpForm);

@@ -18,11 +18,11 @@ class Menu extends Component {
 		return (
 			<ScrollView style={styles.menu} contentContainerStyle={styles.contentContainer}>
 				<View style={[styles.flexAligned, styles.rowContainer]}>
-					<Icon name="md-home" color='#900'/>
-					<Text style={styles.item}>Hi, {username}</Text>
+					<Icon name="md-home" color='#900' style={{marginLeft:0}}/>
+					<Text style={styles.item}>{username}</Text>
 				</View>
 				<View style={[styles.flexAligned, styles.rowContainer]}>
-					<Icon name="md-log-out" color='#900'/>
+					<Icon name="md-log-out" color='#900'style={{marginLeft:0}}/>
 					<Text onPress={() => this._onSignOut()} style={styles.item}>SIGN OUT</Text>
 				</View>
 			</ScrollView>
@@ -44,7 +44,6 @@ const styles = {
 		fontWeight: '600',
 		fontFamily: 'notoserif',
 		paddingTop: 5,
-		marginLeft: 12
 	},
 	flexAligned: {
 		flexDirection: 'row',

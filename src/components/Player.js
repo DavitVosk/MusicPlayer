@@ -38,7 +38,7 @@ class Player extends Component {
 			// loaded successfully, play
 			this.music.play((success) => {
 				if ( success ) {
-					 return this.state.songIndex === this.props.singer.songs.length - 1 ? this.music.stop() : this.changePlayingSongTo('next')
+					return this.state.songIndex === this.props.singer.songs.length - 1 ? this.music.stop() : this.changePlayingSongTo('next')
 				} else {
 					console.log('playback failed due to audio decoding errors');
 				}
