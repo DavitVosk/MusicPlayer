@@ -1,15 +1,17 @@
 import React, { Component } from 'react';
 import { View, Text, FlatList, TouchableOpacity, ListView } from 'react-native';
 import NavBar from './reused/NavBar';
-import { Card, Avatar, List, ListItem } from 'react-native-elements';
+import { Card, Avatar, ListItem } from 'react-native-elements';
 import { Actions } from 'react-native-router-flux';
 
 class SingerSongs extends Component {
 
 	renderSongData = (song, songIndex) => {
-		const {singer} = this.props;
+		const { singer } = this.props;
 		return (
-			<TouchableOpacity onPress={() => Actions.player({ singer, song, songIndex })}>
+			<TouchableOpacity
+				activeOpacity={.5}
+				onPress={() => Actions.player({ singer, song, songIndex })}>
 				<ListItem
 					title={song.title}
 					subtitle={song.album}

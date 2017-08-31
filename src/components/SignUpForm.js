@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text, Image, Dimensions, TouchableHighlight } from 'react-native';
-import InputField from './reused/InputField';
+import InputFieldWithValidationError from './reused/InputField';
 import Button from './reused/Button'
 import * as validate from '../utils/validation/validation';
 import { user_sign_up } from '../actions';
@@ -30,33 +30,21 @@ class SignUpForm extends Component {
 			const emailError = `${email} is not a valid email`;
 			const isValid = validate.validate_email(email);
 
-			if ( ! isValid ) {
-				this.setState({ emailError })
-			} else {
-				this.setState({ emailError: '' })
-			}
+			isValid ? this.setState({ emailError: '' }) : this.setState({ emailError });
 		}
 
 		if ( input === 'password' ) {
 			const passwordError = 'Your password must contain between 6 and 60 characters';
 			const isValid = validate.validate_password(password);
 
-			if ( ! isValid ) {
-				this.setState({ passwordError })
-			} else {
-				this.setState({ passwordError: '' })
-			}
+			isValid ? this.setState({ passwordError: '' }) : this.setState({ passwordError });
 		}
 
 		if ( input === 'confirmPassword' ) {
 			const confirmPasswordError = 'Your passwords must match';
 			const isValid = validate.validate_password_confirmation(password, confirmPassword);
 
-			if ( ! isValid ) {
-				this.setState({ confirmPasswordError })
-			} else {
-				this.setState({ confirmPasswordError: '' })
-			}
+			isValid ? this.setState({ confirmPasswordError: '' }) : this.setState({ confirmPasswordError });
 		}
 	}
 
@@ -64,11 +52,7 @@ class SignUpForm extends Component {
 		const validated = validate.validate_signUP(email, pass, confirmPass);
 		const inputs = ['email', 'password', 'confirmPassword'];
 
-		if ( validated ) {
-			return this.props.user_sign_up(email, pass);
-		} else {
-			return inputs.map(input => this.validateInput(input))
-		}
+		validated ? this.props.user_sign_up(email, pass) : inputs.map(input => this.validateInput(input));
 	}
 
 	render () {
@@ -76,31 +60,31 @@ class SignUpForm extends Component {
 
 		return (
 			<Image source={require('../utils/images/background.png')} style={styles.container}>
-				<InputField
+				<InputFieldWithValidationError
 					iconName={'email'}
 					placeholder="E-mail"
 					onChangeText={email => this.setState({ email })}
 					value={email}
+					errorMessage={emailError}
 				/>
-				<Text style={styles.error}>{emailError}</Text>
 
-				<InputField
+				<InputFieldWithValidationError
 					secureTextEntry
 					iconName={'lock'}
 					placeholder="Password"
 					onChangeText={password => this.setState({ password })}
 					value={password}
+					errorMessage={passwordError}
 				/>
-				<Text style={styles.error}>{passwordError}</Text>
 
-				<InputField
+				<InputFieldWithValidationError
 					secureTextEntry
 					iconName={'lock-open'}
 					placeholder="Confirm Password"
 					onChangeText={confirmPassword => this.setState({ confirmPassword })}
 					value={confirmPassword}
+					errorMessage={confirmPasswordError}
 				/>
-				<Text style={styles.error}>{confirmPasswordError}</Text>
 
 				<Button title="Sign Up" onPress={this.validateSignUP.bind(this, email, password, confirmPassword)}/>
 
@@ -124,9 +108,6 @@ const styles = {
 		fontSize: 15,
 		color: 'white'
 	},
-	error:{
-		color:'red'
-	}
 };
 
 export default connect(null, { user_sign_up })(SignUpForm);

@@ -7,7 +7,7 @@ import {
 	TouchableHighlight,
 	Alert
 } from 'react-native';
-import InputField from './reused/InputField';
+import InputFieldWithValidationError from './reused/InputField';
 import Button from './reused/Button'
 import * as validate from '../utils/validation/validation';
 import { user_sign_in } from '../actions';
@@ -17,7 +17,7 @@ import { connect } from 'react-redux';
 
 const { width, height } = Dimensions.get("window");
 
-class SignUpForm extends Component {
+class SignInForm extends Component {
 	constructor (props) {
 		super(props);
 		this.state = {
@@ -46,35 +46,22 @@ class SignUpForm extends Component {
 			const emailError = `${email} is not a valid email`;
 			const isValid = validate.validate_email(email);
 
-			if ( ! isValid ) {
-				this.setState({ emailError })
-			} else {
-				this.setState({ emailError: '' })
-			}
+			isValid ? this.setState({ emailError: '' }) : this.setState({ emailError });
 		}
 
 		if ( input === 'password' ) {
 			const passwordError = 'Your password must contain between 6 and 60 characters';
 			const isValid = validate.validate_password(password);
 
-			if ( ! isValid ) {
-				this.setState({ passwordError })
-			} else {
-				this.setState({ passwordError: '' })
-			}
+			isValid ? this.setState({ passwordError: '' }) : this.setState({ passwordError });
 		}
 	}
 
 	validateSignIN (email, pass) {
-		this.setState({ emailError: '', passwordError: '' });
 		const validated = validate.validate_signIN(email, pass);
 		const inputs = ['email', 'password',];
 
-		if ( validated ) {
-			return this.props.user_sign_in(email, pass);
-		} else {
-			return inputs.map(input => this.validateInput(input))
-		}
+		validated ? this.props.user_sign_in(email, pass) : inputs.map(input => this.validateInput(input));
 	}
 
 	render () {
@@ -82,30 +69,28 @@ class SignUpForm extends Component {
 
 		return (
 			<Image source={require('../utils/images/background.png')} style={styles.container}>
-				<InputField
+				<InputFieldWithValidationError
 					iconName={'email'}
 					placeholder="E-mail"
 					onChangeText={email => this.setState({ email })}
 					value={email}
+					errorMessage={emailError}
 				/>
-				<Text style={styles.error}>{emailError}</Text>
 
-				<InputField
+				<InputFieldWithValidationError
 					secureTextEntry
 					iconName={'lock'}
 					placeholder="Password"
 					onChangeText={password => this.setState({ password })}
 					value={password}
+					errorMessage={passwordError}
 				/>
-				<Text style={styles.error}>{passwordError}</Text>
-
 
 				<Button title="Sign In" onPress={this.validateSignIN.bind(this, email, password)}/>
 
 				<TouchableHighlight onPress={() => Actions.signUp()}>
 					<Text style={styles.text}>Should Sign Up first ?</Text>
 				</TouchableHighlight>
-
 			</Image>
 		)
 	}
@@ -123,9 +108,6 @@ const styles = {
 		fontSize: 15,
 		color: 'white'
 	},
-	error: {
-		color: 'red'
-	}
 };
 
 const mapStateToProps = ({ auth }) => {
@@ -133,4 +115,4 @@ const mapStateToProps = ({ auth }) => {
 	return { user }
 };
 
-export default connect(mapStateToProps, { user_sign_in })(SignUpForm);
+export default connect(mapStateToProps, { user_sign_in })(SignInForm);

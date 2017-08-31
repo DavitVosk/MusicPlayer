@@ -10,7 +10,7 @@ export default ({ title, iconName, onPress }) => {
 				onPress={onPress}
 				style={styles.icon}/>
 
-			<View style={{flex:1, alignSelf:'center'}}>
+			<View style={{ flex: 1, alignSelf: 'center' }}>
 				<Text style={[styles.text]}>{title}</Text>
 			</View>
 		</View>
@@ -32,13 +32,9 @@ const styles = {
 		fontSize: 20,
 		fontWeight: 'bold'
 	},
-	icon:{
-		marginRight:0,
-		marginLeft:15,
-		alignSelf:'center'
+	icon: {
+		marginRight: 0,
+		marginLeft: 15,
+		alignSelf: 'center'
 	},
-	c: {
-		borderColor: 'red',
-		borderWidth: 1
-	}
 };

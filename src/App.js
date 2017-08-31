@@ -3,7 +3,7 @@ import { View, Text, AsyncStorage } from 'react-native';
 import { persistStore, } from 'redux-persist'
 import { Provider } from 'react-redux';
 import RouterComponent from './Router';
-import store from './reducers/store';
+import store from './utils/store';
 import LeftMenu from './components/menu/MenuWrapped';
 import InitializeFirebase from './firebase/initialize_firebase';
 

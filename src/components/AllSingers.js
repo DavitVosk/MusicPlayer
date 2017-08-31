@@ -10,7 +10,9 @@ class AllSingers extends Component {
 
 	renderSinger (item) {
 		return (
-			<TouchableOpacity onPress={() => Actions.singer({ singer: item })}>
+			<TouchableOpacity
+				activeOpacity={.5}
+				onPress={() => Actions.singer({ singer: item })}>
 				<Card
 					title={item.name}
 					image={{ uri: item.background }}

@@ -22,6 +22,10 @@ class Player extends Component {
 		}
 	}
 
+	componentWillMount () {
+		this.playSong();
+	}
+
 	playSong () {
 		this.music ? this.music.stop() : null;
 
@@ -45,15 +49,6 @@ class Player extends Component {
 			});
 		});
 	}
-
-	componentWillMount () {
-		this.playSong();
-	}
-
-	// componentWillUpdate (nextProps, nextState) {
-	// 	 nextState.currentTime > this.state.songDuration ? this.setState({ play: false }) : null;
-	// 	 nextState.currentTime === this.state.songDuration ? this.changePlayingSongTo('next') : null;
-	// }
 
 	changeCurrentTime = () => {
 		setInterval(() => {
